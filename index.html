@@ -24,6 +24,8 @@
         .btn-primary { background-color: #007bff; color: white; padding: 12px; border-radius: 12px; font-weight: bold; }
         .btn-sell-float { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 16px 32px; border-radius: 50px; font-weight: 900; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4); z-index: 50; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        .category-pill { padding: 8px 20px; border-radius: 50px; background: white; border: 1px solid #e2e8f0; font-weight: 600; white-space: nowrap; cursor: pointer; transition: 0.2s; }
+        .category-pill.active { background: #007bff; color: white; border-color: #007bff; }
     </style>
 </head>
 <body id="app-body">
@@ -34,25 +36,33 @@
 
         // === НАСТРОЙКА БАЗЫ ДАННЫХ ===
         const SUPABASE_URL = "https://mxybbskobdovnevhflrj.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_5WR1e2TY6kS3ff7_ZJD_uQ_uQIFw2mS";
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const SUPABASE_KEY = "sb_publishable_5WR1e2TY6kS3ff7_ZJD_uQ_uQIFw2mS"; 
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        const CATEGORIES = ['Лекарства', 'Витамины', 'Ребенок', 'Косметика', 'Гигиена', 'Зоотовары'];
+        const CATEGORIES = ['Все', 'Лекарства', 'Витамины', 'Ребенок', 'Косметика', 'Гигиена', 'Зоотовары'];
 
         const App = () => {
             const [items, setItems] = useState([]);
+            const [cart, setCart] = useState([]);
             const [user, setUser] = useState(JSON.parse(localStorage.getItem('apt_user') || 'null'));
             const [modal, setModal] = useState(null);
             const [selected, setSelected] = useState(null);
+            const [activeCat, setActiveCat] = useState('Все');
             const [darkMode, setDarkMode] = useState(false);
+            const [searchQuery, setSearchQuery] = useState("");
 
             useEffect(() => {
                 fetchItems();
                 document.getElementById('app-body').className = darkMode ? 'dark' : '';
-            }, [darkMode]);
+                if(window.lucide) lucide.createIcons();
+            }, [darkMode, activeCat]);
 
             async function fetchItems() {
-                const { data, error } = await supabase.from('items').select('*').order('created_at', { ascending: false });
+                let query = supabaseClient.from('items').select('*').order('created_at', { ascending: false });
+                if (activeCat !== 'Все') {
+                    query = query.eq('type', activeCat);
+                }
+                const { data, error } = await query;
                 if (!error) setItems(data || []);
             }
 
@@ -63,93 +73,179 @@
                 const desc = document.getElementById('ad').value;
                 const cat = document.getElementById('ac').value;
 
-                if(!title || !price || !phone) return alert("Заполните основные поля!");
+                if(!title || !price || !phone) return alert("Заполните поля!");
 
-                const { error } = await supabase.from('items').insert([{
-                    title, price, phone: phone.replace(/\D/g,''), desc, type: cat, owner: user.login
+                const { error } = await supabaseClient.from('items').insert([{
+                    title, price, phone: phone.replace(/\D/g,''), desc, type: cat, owner: user?.login || 'Гость'
                 }]);
 
                 if (!error) {
-                    alert("Успешно опубликовано!");
+                    alert("Опубликовано!");
                     setModal(null);
                     fetchItems();
                 } else {
-                    alert("Ошибка базы данных. Проверьте настройки таблицы 'items'");
+                    alert("Ошибка: " + error.message);
                 }
             }
 
+            const filteredItems = items.filter(i => i.title.toLowerCase().includes(searchQuery.toLowerCase()));
+
             return (
-                <div className="min-h-screen pb-24">
+                <div className="min-h-screen pb-32">
+                    {/* Header */}
                     <header className="bg-white border-b p-4 flex justify-between items-center sticky top-0 z-40 shadow-sm">
-                        <h1 className="text-xl font-black text-blue-600 italic">APTEKA.KG</h1>
+                        <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+                                <i data-lucide="plus-square"></i>
+                            </div>
+                            <h1 className="text-xl font-black text-blue-600 italic">APTEKA.KG</h1>
+                        </div>
                         <div className="flex gap-2">
-                            <button onClick={() => setDarkMode(!darkMode)} className="p-2 bg-slate-100 rounded-lg">
-                                <i data-lucide={darkMode ? "sun" : "moon"}></i>
+                            <button onClick={() => setDarkMode(!darkMode)} className="p-3 bg-slate-100 rounded-2xl hover:bg-slate-200 transition">
+                                <i data-lucide={darkMode ? "sun" : "moon"} size={20}></i>
+                            </button>
+                            <button onClick={() => setModal('cart')} className="p-3 bg-blue-50 text-blue-600 rounded-2xl relative">
+                                <i data-lucide="shopping-cart" size={20}></i>
+                                {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center border-2 border-white">{cart.length}</span>}
                             </button>
                             {user ? (
-                                <div className="bg-blue-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold">
+                                <button onClick={() => setModal('profile')} className="w-11 h-11 bg-blue-600 text-white rounded-2xl font-bold shadow-lg shadow-blue-200">
                                     {user.login[0].toUpperCase()}
-                                </div>
+                                </button>
                             ) : (
-                                <button onClick={() => {
-                                    const name = prompt("Ваше имя?");
-                                    if(name) { setUser({login: name}); localStorage.setItem('apt_user', JSON.stringify({login: name})); }
-                                }} className="btn-primary text-xs px-4 py-2">ВОЙТИ</button>
+                                <button onClick={() => setModal('auth')} className="btn-primary px-6">ВОЙТИ</button>
                             )}
                         </div>
                     </header>
 
+                    {/* Search & Categories */}
+                    <div className="p-4 space-y-4">
+                        <div className="relative">
+                            <i data-lucide="search" className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20}></i>
+                            <input 
+                                className="input-style pl-12 h-14 text-lg shadow-sm" 
+                                placeholder="Поиск лекарств..." 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                            {CATEGORIES.map(c => (
+                                <button key={c} onClick={() => setActiveCat(c)} className={`category-pill ${activeCat === c ? 'active' : ''}`}>
+                                    {c}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Grid */}
                     <main className="p-4 grid grid-cols-2 gap-4">
-                        {items.map(item => (
-                            <div key={item.id} onClick={() => setSelected(item)} className="bg-white p-3 rounded-[2rem] border border-slate-100 shadow-sm active:scale-95 transition">
-                                <div className="h-32 bg-slate-50 rounded-2xl mb-2 flex items-center justify-center text-4xl">📦</div>
-                                <h3 className="font-bold text-sm truncate uppercase">{item.title}</h3>
-                                <b className="text-blue-600 text-lg">{item.price} с</b>
+                        {filteredItems.map(item => (
+                            <div key={item.id} onClick={() => setSelected(item)} className="bg-white p-3 rounded-[2.5rem] border border-slate-100 shadow-sm hover:shadow-md active:scale-95 transition">
+                                <div className="h-40 bg-slate-50 rounded-[2rem] mb-3 flex items-center justify-center text-5xl">📦</div>
+                                <div className="px-2 pb-2">
+                                    <h3 className="font-bold text-sm truncate uppercase mb-1">{item.title}</h3>
+                                    <div className="flex justify-between items-center">
+                                        <b className="text-blue-600 text-xl font-black">{item.price} с</b>
+                                        <div className="bg-blue-50 p-2 rounded-lg text-blue-600"><i data-lucide="chevron-right" size={16}></i></div>
+                                    </div>
+                                </div>
                             </div>
                         ))}
                     </main>
 
-                    <button onClick={() => user ? setModal('sell') : alert("Сначала войдите!")} className="btn-sell-float">
-                        + ПРОДАТЬ
+                    {/* Float Button */}
+                    <button onClick={() => user ? setModal('sell') : setModal('auth')} className="btn-sell-float flex items-center gap-2">
+                        <i data-lucide="plus-circle"></i> ПРОДАТЬ
                     </button>
 
+                    {/* Modals (Sell, Cart, Details etc.) */}
                     {modal === 'sell' && (
-                        <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-[100]">
-                            <div className="bg-white w-full max-w-md p-6 rounded-[2.5rem] shadow-2xl">
-                                <h2 className="text-xl font-black mb-4 uppercase">Добавить товар</h2>
-                                <div className="space-y-3">
-                                    <input id="at" className="input-style" placeholder="Название" />
-                                    <div className="grid grid-cols-2 gap-2">
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-4 z-[100]">
+                            <div className="bg-white w-full max-w-md p-8 rounded-[3rem] animate-in slide-in-from-bottom duration-300">
+                                <div className="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+                                <h2 className="text-2xl font-black mb-6 uppercase flex items-center gap-2">
+                                    <i data-lucide="package-plus" className="text-emerald-500"></i> Новый товар
+                                </h2>
+                                <div className="space-y-4">
+                                    <input id="at" className="input-style" placeholder="Название товара" />
+                                    <div className="grid grid-cols-2 gap-3">
                                         <input id="ap" type="number" className="input-style" placeholder="Цена (сом)" />
-                                        <select id="ac" className="input-style text-xs">
-                                            {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                                        <select id="ac" className="input-style">
+                                            {CATEGORIES.filter(c => c !== 'Все').map(c => <option key={c} value={c}>{c}</option>)}
                                         </select>
                                     </div>
-                                    <input id="aph" className="input-style" placeholder="WhatsApp (напр: 996700123456)" />
-                                    <textarea id="ad" className="input-style h-24" placeholder="Описание товара"></textarea>
-                                    <button onClick={handlePublish} className="w-full btn-primary py-4 rounded-2xl text-lg">ОПУБЛИКОВАТЬ</button>
-                                    <button onClick={() => setModal(null)} className="w-full text-slate-400 font-bold">Отмена</button>
+                                    <input id="aph" className="input-style" placeholder="WhatsApp (например: 996700123456)" />
+                                    <textarea id="ad" className="input-style h-28" placeholder="Описание и состояние"></textarea>
+                                    <button onClick={handlePublish} className="w-full btn-primary py-5 rounded-[1.5rem] text-lg shadow-xl shadow-blue-100 mt-4">ОПУБЛИКОВАТЬ</button>
+                                    <button onClick={() => setModal(null)} className="w-full text-slate-400 font-bold py-2">Отмена</button>
                                 </div>
                             </div>
                         </div>
                     )}
 
                     {selected && (
-                        <div className="fixed inset-0 bg-white z-[100] p-6 flex flex-col">
-                            <button onClick={() => setSelected(null)} className="mb-4 text-blue-600 font-bold flex items-center gap-1">
-                                <i data-lucide="chevron-left"></i> Назад
+                        <div className="fixed inset-0 bg-white z-[100] p-6 flex flex-col animate-in fade-in duration-200">
+                            <button onClick={() => setSelected(null)} className="mb-6 w-12 h-12 flex items-center justify-center bg-slate-100 rounded-2xl text-slate-600">
+                                <i data-lucide="x"></i>
                             </button>
-                            <div className="h-64 bg-slate-50 rounded-[3rem] mb-6 flex items-center justify-center text-8xl">📦</div>
-                            <h2 className="text-3xl font-black uppercase mb-2">{selected.title}</h2>
-                            <div className="text-3xl font-bold text-blue-600 mb-6">{selected.price} сом</div>
-                            <div className="bg-slate-50 p-6 rounded-3xl mb-8 flex-grow overflow-y-auto">
-                                <p className="text-slate-600 leading-relaxed">{selected.desc || 'Нет описания'}</p>
+                            <div className="h-72 bg-slate-50 rounded-[3.5rem] mb-8 flex items-center justify-center text-9xl shadow-inner italic font-black text-slate-200">
+                                💊
                             </div>
-                            <a href={`https://wa.me/${selected.phone}?text=Здравствуйте, я по поводу: ${selected.title}`} 
-                               target="_blank" 
-                               className="w-full bg-[#25D366] text-white py-5 rounded-3xl font-black text-center text-xl shadow-xl flex items-center justify-center gap-2">
-                                <i data-lucide="message-circle"></i> НАПИСАТЬ В WHATSAPP
-                            </a>
+                            <div className="flex-grow">
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <span className="text-blue-600 font-black text-xs uppercase tracking-widest">{selected.type}</span>
+                                        <h2 className="text-4xl font-black uppercase leading-tight">{selected.title}</h2>
+                                    </div>
+                                    <div className="text-3xl font-black text-blue-600">{selected.price} сом</div>
+                                </div>
+                                <div className="bg-slate-50 p-6 rounded-[2rem] min-h-[150px] mb-8 border border-slate-100">
+                                    <p className="text-slate-600 leading-relaxed text-lg">{selected.desc || 'Продавец не добавил описание.'}</p>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-4 gap-3">
+                                <button onClick={() => {setCart([...cart, {...selected, cid: Math.random()}]); setSelected(null);}} className="bg-blue-50 text-blue-600 p-5 rounded-3xl flex items-center justify-center">
+                                    <i data-lucide="shopping-cart"></i>
+                                </button>
+                                <a href={`https://wa.me/${selected.phone}?text=Здравствуйте, я по поводу: ${selected.title}`} 
+                                   target="_blank" 
+                                   className="col-span-3 bg-[#25D366] text-white py-5 rounded-[2rem] font-black text-center text-xl shadow-xl flex items-center justify-center gap-3">
+                                    <i data-lucide="message-circle" fill="white"></i> WHATSAPP
+                                </a>
+                            </div>
+                        </div>
+                    )}
+
+                    {modal === 'cart' && (
+                        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4">
+                            <div className="bg-white w-full max-w-md rounded-[3rem] p-8 shadow-2xl">
+                                <div className="flex justify-between items-center mb-8">
+                                    <h2 className="text-3xl font-black uppercase italic text-blue-600">Корзина</h2>
+                                    <button onClick={() => setModal(null)} className="p-2 bg-slate-100 rounded-xl"><i data-lucide="x"></i></button>
+                                </div>
+                                <div className="max-h-[400px] overflow-y-auto pr-2 no-scrollbar space-y-4">
+                                    {cart.length === 0 ? <div className="text-center py-10 text-slate-400 font-bold">Корзина пуста</div> : cart.map(i => (
+                                        <div key={i.cid} className="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                                            <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-2xl">💊</div>
+                                            <div className="flex-grow min-w-0">
+                                                <h4 className="font-bold text-xs uppercase truncate">{i.title}</h4>
+                                                <b className="text-blue-600 font-black">{i.price} сом</b>
+                                            </div>
+                                            <button onClick={() => setCart(cart.filter(c => c.cid !== i.cid))} className="text-red-400 p-2 hover:bg-red-50 rounded-xl transition"><i data-lucide="trash-2" size={20}></i></button>
+                                        </div>
+                                    ))}
+                                </div>
+                                {cart.length > 0 && (
+                                    <div className="pt-6 border-t mt-6">
+                                        <div className="flex justify-between items-center mb-6">
+                                            <span className="font-black uppercase text-xs text-slate-400 tracking-widest">Итого к оплате:</span>
+                                            <span className="text-3xl font-black text-blue-600">{cart.reduce((a, b) => a + Number(b.price), 0)} с</span>
+                                        </div>
+                                        <button onClick={() => {alert("Заказ принят!"); setCart([]); setModal(null);}} className="w-full btn-primary py-6 rounded-3xl font-black uppercase text-lg shadow-xl shadow-blue-100">Оформить заказ</button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -158,8 +254,6 @@
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
-        setTimeout(() => { if(window.lucide) lucide.createIcons(); }, 1000);
     </script>
 </body>
 </html>
-
