@@ -234,7 +234,7 @@
                                 <div className="space-y-4 text-left">
                                     <div>
                                         <label className="text-[10px] font-black uppercase px-2 text-slate-400">Имя (Логин)</label>
-                                        <input value={loginInput} onChange={e => setLoginInput(e.target.value)} className="input-style mt-1" placeholder="Напр: Артур" />
+                                        <input value={loginInput} onChange={e => setLoginInput(e.target.value)} className="input-style mt-1" placeholder="Логин" />
                                     </div>
                                     <div>
                                         <label className="text-[10px] font-black uppercase px-2 text-slate-400">Пароль</label>
@@ -260,7 +260,7 @@
                                     {isAdmin && (
                                         <button onClick={() => setModal('admin_panel')} className="w-full flex justify-between p-5 bg-red-50 text-red-600 rounded-2xl font-black uppercase text-[10px] border border-red-100 shadow-sm">Панель модерации ({pendingItems.length}) <i data-lucide="shield"></i></button>
                                     )}
-                                    <button onClick={() => setModal('my_items')} className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px]">Мои товары <i data-lucide="chevron-right"></i></button>
+                                    <button className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px]">Мои товары <i data-lucide="chevron-right"></i></button>
                                 </div>
                                 <button onClick={() => { setUser(null); setModal(null); }} className="w-full p-5 text-red-500 font-black uppercase text-[10px] bg-red-50 rounded-2xl mt-4 hover:bg-red-100 transition">Выйти из аккаунта</button>
                             </div>
@@ -276,7 +276,7 @@
                                         <div key={p.id} className="bg-slate-50 p-6 rounded-[2.5rem] border flex gap-6 items-center">
                                             <div className="flex-grow">
                                                 <h4 className="font-black uppercase text-sm mb-2">{p.title} - <span className="text-blue-600">{p.price} сом</span></h4>
-                                                <p className="text-[10px] font-bold text-slate-400 mb-2">Номер: {p.phone}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 mb-2">WhatsApp: {p.phone}</p>
                                                 <div className="flex gap-2">
                                                     <button onClick={() => { setItems([...items, p]); setPendingItems(pendingItems.filter(x => x.id !== p.id)); }} className="flex-1 bg-emerald-500 text-white py-3 rounded-xl font-black uppercase text-[10px] shadow-md">Одобрить</button>
                                                     <button onClick={() => setPendingItems(pendingItems.filter(x => x.id !== p.id))} className="flex-1 bg-red-100 text-red-500 py-3 rounded-xl font-black uppercase text-[10px]">Удалить</button>
@@ -295,49 +295,37 @@
                             <div className="bg-white w-full max-w-lg rounded-[3rem] p-8 shadow-2xl modal-animate">
                                 <div className="flex justify-between items-center mb-6"><h2 className="text-xl font-black uppercase text-blue-600 italic">Подать объявление</h2><button onClick={() => setModal(null)} className="p-2 bg-slate-100 rounded-full"><i data-lucide="x"></i></button></div>
                                 <div className="space-y-4">
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase px-2 text-slate-400">Название</label>
-                                        <input id="sell-title" className="input-style mt-1 text-xs" placeholder="Напр: Парацетамол" />
-                                    </div>
+                                    <input id="sell-title" className="input-style text-xs" placeholder="Название товара" />
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase px-2 text-slate-400">Категория</label>
-                                            <select id="sell-type" className="input-style mt-1 text-xs uppercase font-black">
-                                                {Object.keys(CATEGORIES_DATA).filter(k => k !== 'Все товары').map(k => <option key={k} value={k}>{k}</option>)}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="text-[10px] font-black uppercase px-2 text-slate-400">Цена (сом)</label>
-                                            <input id="sell-price" type="number" className="input-style mt-1 text-xs" placeholder="0" />
-                                        </div>
+                                        <select id="sell-type" className="input-style text-xs uppercase font-black">
+                                            {Object.keys(CATEGORIES_DATA).filter(k => k !== 'Все товары').map(k => <option key={k} value={k}>{k}</option>)}
+                                        </select>
+                                        <input id="sell-price" type="number" className="input-style text-xs" placeholder="Цена (сом)" />
                                     </div>
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase px-2 text-slate-400">Номер WhatsApp (обязательно)</label>
-                                        <input id="sell-phone" type="tel" className="input-style mt-1 text-xs border-blue-200" placeholder="996700123456" />
-                                    </div>
-                                    <div>
-                                        <label className="text-[10px] font-black uppercase px-2 text-slate-400">Описание</label>
-                                        <textarea id="sell-desc" className="input-style mt-1 h-28 resize-none text-xs" placeholder="Опишите товар..."></textarea>
-                                    </div>
+                                    <input id="sell-phone" type="tel" className="input-style text-xs" placeholder="Номер WhatsApp (напр: 996700123456)" />
+                                    <textarea id="sell-desc" className="input-style h-28 resize-none text-xs" placeholder="Описание товара"></textarea>
                                 </div>
                                 <button onClick={() => {
                                     const t = document.getElementById('sell-title').value;
                                     const p = document.getElementById('sell-price').value;
                                     const ph = document.getElementById('sell-phone').value;
-                                    if(!t || !p || !ph) return alert("ОШИБКА: Заполните название, цену и номер телефона!");
-                                    
+                                    const d = document.getElementById('sell-desc').value;
+                                    const ty = document.getElementById('sell-type').value;
+
+                                    if(!t || !p || !ph) return alert("ОШИБКА: Заполните название, цену и номер WhatsApp!");
+
                                     setPendingItems([...pendingItems, { 
                                         title: t, 
                                         price: p, 
-                                        phone: ph.replace(/\D/g,''), // только цифры
-                                        type: document.getElementById('sell-type').value, 
-                                        desc: document.getElementById('sell-desc').value, 
+                                        phone: ph.replace(/\D/g, ''), // Очистка номера
+                                        type: ty, 
+                                        desc: d, 
                                         id: Date.now(), 
                                         owner: user.login, 
                                         img: DEFAULT_IMG 
                                     }]);
                                     setModal(null);
-                                    alert("Успешно! Объявление отправлено на проверку.");
+                                    alert("Объявление отправлено на модерацию!");
                                 }} className="w-full btn-primary py-5 rounded-3xl font-black uppercase text-sm mt-6 shadow-xl active:scale-95 transition">Опубликовать</button>
                             </div>
                         </div>
@@ -359,14 +347,20 @@
                                         <p className="text-slate-500 font-medium leading-relaxed whitespace-pre-line text-sm">{selectedProduct.desc || 'Описание отсутствует.'}</p>
                                     </div>
                                     <div className="mt-6 flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-black">{selectedProduct.owner[0].toUpperCase()}</div>
-                                        <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Продавец: {selectedProduct.owner}</div>
+                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-black">{selectedProduct.owner ? selectedProduct.owner[0].toUpperCase() : '?'}</div>
+                                        <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Продавец: {selectedProduct.owner || 'Неизвестен'}</div>
                                     </div>
                                 </div>
                                 <div className="p-8 border-t flex flex-col gap-3 bg-white">
-                                    <a href={`https://wa.me/${selectedProduct.phone}`} target="_blank" className="w-full bg-[#25D366] text-white py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition text-center flex items-center justify-center gap-2">
-                                        <i data-lucide="message-circle"></i> Написать в WhatsApp
-                                    </a>
+                                    {selectedProduct.phone && (
+                                        <a 
+                                            href={`https://wa.me/${selectedProduct.phone}?text=${encodeURIComponent('Здравствуйте! Я по поводу товара: ' + selectedProduct.title)}`} 
+                                            target="_blank" 
+                                            className="w-full bg-[#25D366] text-white py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition text-center flex items-center justify-center gap-2"
+                                        >
+                                            <i data-lucide="message-circle"></i> Написать в WhatsApp
+                                        </a>
+                                    )}
                                     <button onClick={() => { setCart([...cart, {...selectedProduct, cid: Date.now()}]); setSelectedProduct(null); }} className="w-full btn-primary py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition">Добавить в корзину</button>
                                 </div>
                             </div>
@@ -379,7 +373,7 @@
                             <div className="relative w-full max-w-md bg-white h-screen shadow-2xl flex flex-col p-8 modal-animate">
                                 <div className="flex justify-between items-center mb-8"><h2 className="text-2xl font-black uppercase italic text-blue-600">Корзина</h2><button onClick={() => setModal(null)} className="p-2 bg-slate-100 rounded-full"><i data-lucide="x"></i></button></div>
                                 <div className="flex-grow overflow-y-auto space-y-4 no-scrollbar">
-                                    {cart.length === 0 ? <div className="text-center py-20 opacity-20 text-3xl font-black uppercase">Ваша корзина пуста</div> : 
+                                    {cart.length === 0 ? <div className="text-center py-20 opacity-20 text-3xl font-black uppercase">Пусто</div> : 
                                     cart.map(i => (
                                         <div key={i.cid} className="flex gap-4 items-center bg-slate-50 p-4 rounded-3xl border border-slate-100">
                                             <div className="flex-grow min-w-0"><h4 className="font-bold text-xs uppercase truncate">{i.title}</h4><b className="text-blue-600 font-black">{i.price} сом</b></div>
@@ -390,7 +384,7 @@
                                 {cart.length > 0 && (
                                     <div className="pt-6 border-t mt-6">
                                         <div className="flex justify-between items-center mb-6"><span className="font-black uppercase text-xs text-slate-400">Итого:</span><span className="text-3xl font-black text-blue-600">{cart.reduce((a, b) => a + Number(b.price), 0)} с</span></div>
-                                        <button onClick={() => {alert("Заказ оформлен!"); setCart([]); setModal(null);}} className="w-full btn-primary py-6 rounded-3xl font-black uppercase text-lg shadow-xl">Купить все</button>
+                                        <button onClick={() => {alert("Заказ принят!"); setCart([]); setModal(null);}} className="w-full btn-primary py-6 rounded-3xl font-black uppercase text-lg shadow-xl">Оформить заказ</button>
                                     </div>
                                 )}
                             </div>
