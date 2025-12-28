@@ -35,7 +35,7 @@
         // === НАСТРОЙКА БАЗЫ ДАННЫХ ===
         const SUPABASE_URL = "https://mxybbskobdovnevhflrj.supabase.co";
         const SUPABASE_KEY = "sb_publishable_5WR1e2TY6kS3ff7_ZJD_uQ_uQIFw2mS";
-        const supabase = idb.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const CATEGORIES = ['Лекарства', 'Витамины', 'Ребенок', 'Косметика', 'Гигиена', 'Зоотовары'];
 
@@ -162,3 +162,4 @@
     </script>
 </body>
 </html>
+
