@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>apteka.kg | Полная версия</title>
+    <title>apteka.kg | Маркетплейс здоровья</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -11,31 +11,73 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; transition: 0.3s; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; }
+        body { font-family: 'Inter', sans-serif; transition: 0.3s; background-color: #f8fafc; color: #1e293b; overflow-x: hidden; padding-bottom: 80px; }
         body.dark { background-color: #0f172a; color: #f1f5f9; }
         .dark .bg-white { background-color: #1e293b !important; color: #f1f5f9 !important; }
         .dark .bg-slate-50, .dark .bg-slate-100 { background-color: #334155 !important; color: #f1f5f9 !important; }
-        .dark .border { border-color: #334155 !important; }
+        .dark .border, .dark .border-slate-100, .dark .border-slate-200 { border-color: #334155 !important; }
         .dark .input-style { background-color: #334155 !important; color: #fff !important; }
         .dark .text-slate-600 { color: #cbd5e1 !important; }
-        .apteka-blue { background-color: #007bff; }
-        .btn-primary { background-color: #007bff; color: white; transition: all 0.2s; border: none; }
-        .btn-primary:hover { background-color: #0056b3; transform: translateY(-1px); }
+        .dark .text-slate-500 { color: #94a3b8 !important; }
+        .dark .text-slate-400 { color: #64748b !important; }
+
+        .apteka-blue { background-color: #2563eb; }
+        .btn-primary { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; transition: all 0.2s; border: none; }
+        .btn-primary:hover { box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); transform: translateY(-2px); }
+        .btn-primary:active { transform: scale(0.98); }
+        
         .input-style { background: #f1f5f9; border: 2px solid transparent; border-radius: 12px; padding: 12px 16px; outline: none; transition: 0.2s; width: 100%; font-weight: 600; }
-        .input-style:focus { border-color: #007bff; background: white; }
+        .input-style:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; scroll-behavior: smooth; }
-        .scroll-arrow { background: #000; color: #fff; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 15px rgba(0,0,0,0.4); z-index: 20; position: absolute; top: 50%; transform: translateY(-50%); cursor: pointer; border: 2px solid #000; transition: 0.2s; }
-        .scroll-arrow:active { scale: 0.9; }
-        .category-container { display: flex; gap: 24px; overflow-x: auto; padding: 10px 5px; }
-        .btn-sell-float { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #10b981; color: white; padding: 16px 32px; border-radius: 50px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.4); z-index: 40; display: flex; align-items: center; gap: 10px; border: none; }
-        .modal-animate { animation: zoomIn 0.2s ease-out; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .subcat-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 800; white-space: nowrap; transition: 0.2s; border: 1px solid #e2e8f0; text-transform: uppercase; }
-        .subcat-btn.active { background: #007bff; color: white; border-color: #007bff; }
+        
+        .scroll-arrow { background: #fff; color: #1e293b; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 20; position: absolute; top: 50%; transform: translateY(-50%); cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .scroll-arrow:hover { background: #f8fafc; scale: 1.1; }
+
+        .category-container { display: flex; gap: 12px; overflow-x: auto; padding: 10px 5px; }
+
+        .btn-sell-float { position: fixed; bottom: 100px; right: 20px; background: #10b981; color: white; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); z-index: 40; transition: 0.3s; border: none; }
+        .btn-sell-float:hover { transform: scale(1.1) rotate(90deg); }
+        
+        .modal-animate { animation: slideUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes slideUpModal { from { opacity: 0; transform: translateY(50px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Badges & UI Elements */
+        .badge { position: absolute; top: 10px; left: 10px; padding: 4px 8px; border-radius: 6px; font-size: 9px; font-weight: 900; text-transform: uppercase; color: white; z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .badge-hit { background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); color: #be185d; }
+        .badge-discount { background: #ef4444; }
+        .badge-new { background: #10b981; }
+        
+        .tab-btn { padding: 12px 24px; font-weight: 700; color: #64748b; border-bottom: 3px solid transparent; transition: 0.2s; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .tab-btn.active { color: #2563eb; border-color: #2563eb; }
+        
+        .toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 50px; z-index: 200; animation: slideDown 0.3s; box-shadow: 0 10px 25px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 13px; }
+        @keyframes slideDown { from { transform: translate(-50%, -100%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
+
+        /* Чат виджет */
+        .chat-widget { position: fixed; bottom: 100px; right: 20px; z-index: 50; }
+        .chat-btn { width: 60px; height: 60px; border-radius: 50%; background: #2563eb; color: white; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(37,99,235,0.4); cursor: pointer; transition: 0.3s; }
+        .chat-btn:hover { transform: scale(1.1); }
+        .chat-window { position: absolute; bottom: 80px; right: 0; width: 300px; height: 400px; background: white; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); display: flex; flex-col; overflow: hidden; animation: zoomIn 0.2s; flex-direction: column; border: 1px solid #e2e8f0; }
+        
+        /* Bottom Bar (Mobile) */
+        .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-around; align-items: center; z-index: 45; padding-bottom: 10px; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 10px; font-weight: 700; width: 20%; }
+        .nav-item.active { color: #2563eb; }
+
+        /* Search Dropdown */
+        .search-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 0 0 20px 20px; shadow: 0 20px 40px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; border-top: none; z-index: 30; max-height: 300px; overflow-y: auto; }
+        .search-item { padding: 12px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid #f1f5f9; }
+        .search-item:hover { background: #f8fafc; }
+
+        /* Brands Slider Animation */
+        .brands-slide { animation: scroll 40s linear infinite; display: flex; width: max-content; }
+        .brands-slide:hover { animation-play-state: paused; }
+        @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
     </style>
 </head>
 <body id="app-body">
@@ -43,21 +85,37 @@
 
     <script type="text/babel">
         const { useState, useEffect, useRef } = React;
-
-        // --- ДАННЫЕ ПОДКЛЮЧЕНИЯ ---
-        const SB_URL = "https://mxybbskobdovnevhflrj.supabase.co"; 
-        const SB_KEY = "sb_publishable_5WR1e2TY6kS3ff7_ZJD_uQ_uQIFw2mS"; // Замените здесь
+        
+        // КЛЮЧИ SUPABASE
+        const SB_URL = "https://ewbjffxrncxclvcofqtr.supabase.co"; 
+        const SB_KEY = "sb_publishable_ZH0KWTNPecsOi7BIudsZow_S73pK6wK";
         const supabaseClient = supabase.createClient(SB_URL, SB_KEY);
 
         const ADMIN_NAME = "Admin_Apteka";
         const DEFAULT_IMG = "https://cdn-icons-png.flaticon.com/512/4320/4320337.png";
+
+        // ДАННЫЕ
+        const BANNERS = [
+            { id: 1, title: "СЕЗОН ПРОСТУД?", sub: "Скидки на противовирусные до -20%", color: "bg-gradient-to-r from-blue-600 to-indigo-500", img: "🤧" },
+            { id: 2, title: "ВИТАМИНЫ", sub: "Укрепите иммунитет всей семьи", color: "bg-gradient-to-r from-emerald-500 to-teal-400", img: "🍋" },
+            { id: 3, title: "ДЕТСКИЕ ТОВАРЫ", sub: "Всё лучшее для малышей", color: "bg-gradient-to-r from-orange-400 to-rose-400", img: "👶" },
+            { id: 4, title: "КОСМЕТИКА", sub: "Аптечная косметика из Франции", color: "bg-gradient-to-r from-purple-500 to-pink-500", img: "🧴" },
+        ];
+        
+        // --- РЕАЛЬНЫЕ БРЕНДЫ ДЛЯ ПОИСКА ---
+        const BRANDS = [
+            "Nurofen", "Suprastin", "No-Shpa", "Teraflu", "Linex", 
+            "Detralex", "Kagocel", "Espumisan", "Bayer", "Pfizer", 
+            "Evalar", "Panadol", "Vichy", "La Roche-Posay", "Aspirin",
+            "Voltaren", "Mezym", "Rennie", "Bepanthen", "Otrivin"
+        ];
 
         const CATEGORIES_DATA = {
             'Все товары': [],
             'Лекарства': ['Обезболивающие', 'От простуды', 'Для желудка', 'Сердечные', 'Антибиотики', 'Нервная система', 'Глазные капли'],
             'Витамины': ['Мультивитамины', 'Для иммунитета', 'Для волос и кожи', 'Омега-3', 'Минералы'],
             'Ребенок': ['Подгузники', 'Детское питание', 'Уход за кожей', 'Бутылочки', 'Игрушки'],
-            'Мама и малыш': ['Для беременных', 'Грудное вскамливание', 'Послеродовой уход', 'Тесты'],
+            'Мама и малыш': ['Для беременных', 'Грудное вскармливание', 'Послеродовой уход', 'Тесты'],
             'Косметика': ['Лицо', 'Тело', 'Аптечная косметика', 'Подарочные наборы'],
             'Гигиена': ['Уход за зубами', 'Для душа', 'Дезодоранты', 'Женская гигиена'],
             'Медтехника': ['Тонометры', 'Термометры', 'Ингаляторы', 'Глюкометры'],
@@ -70,7 +128,7 @@
             'Зоотовары': ['Для кошек', 'Для собак', 'Ветпрепараты', 'Корма'],
             'Макияж': ['Тональные средства', 'Тушь', 'Помады']
         };
-
+        
         const CATEGORY_LIST = [
             { name: 'Все товары', icon: '📦' }, { name: 'Лекарства', icon: '💊' },
             { name: 'Витамины', icon: '🧬' }, { name: 'Ребенок', icon: '👶' },
@@ -82,31 +140,60 @@
             { name: 'Зоотовары', icon: '🐾' }, { name: 'Макияж', icon: '💄' }
         ];
 
+        const SORT_OPTIONS = [
+            { value: 'popular', label: 'По популярности' },
+            { value: 'price_asc', label: 'Сначала дешевые' },
+            { value: 'price_desc', label: 'Сначала дорогие' },
+            { value: 'new', label: 'Новинки' }
+        ];
+
+        const FAKE_REVIEWS = [
+            { user: "Айгуль К.", rating: 5, date: "12.01.2024", text: "Отличное средство, помогло с первого раза! Доставили быстро." },
+            { user: "Марат С.", rating: 4, date: "10.01.2024", text: "Хорошее качество, но курьер немного задержался." },
+            { user: "Елена В.", rating: 5, date: "05.01.2024", text: "Постоянно беру здесь, цены ниже чем в аптеке у дома." },
+            { user: "Азамат", rating: 5, date: "02.01.2024", text: "Рекомендую! Всё упаковано идеально." }
+        ];
+
         const App = () => {
             const [user, setUser] = useState(() => JSON.parse(localStorage.getItem('apt_user') || 'null'));
             const [accounts, setAccounts] = useState(() => JSON.parse(localStorage.getItem('apt_accounts') || '{}'));
-            const [items, setItems] = useState([]); // Будем брать из БД
-            const [pendingItems, setPendingItems] = useState([]); // Будем брать из БД
-            const [cart, setCart] = useState([]);
+            const [items, setItems] = useState([]);
+            const [cart, setCart] = useState(() => JSON.parse(localStorage.getItem('apt_cart') || '[]'));
             const [filter, setFilter] = useState('Все товары');
             const [subFilter, setSubFilter] = useState('Все');
             const [search, setSearch] = useState('');
             const [modal, setModal] = useState(null); 
             const [selectedProduct, setSelectedProduct] = useState(null);
             const [darkMode, setDarkMode] = useState(() => localStorage.getItem('dark_mode') === 'true');
-
             const [loginInput, setLoginInput] = useState('');
             const [passInput, setPassInput] = useState('');
+            const [currentBanner, setCurrentBanner] = useState(0);
+
+            const [favorites, setFavorites] = useState(() => JSON.parse(localStorage.getItem('apt_fav') || '[]'));
+            const [viewed, setViewed] = useState(() => JSON.parse(localStorage.getItem('apt_viewed') || '[]'));
+            const [sortType, setSortType] = useState('popular');
+            const [activeTab, setActiveTab] = useState('desc'); 
+            const [toast, setToast] = useState(null);
+            
+            const [checkoutStep, setCheckoutStep] = useState(1);
+            const [orderData, setOrderData] = useState({ name: '', phone: '', address: '', comment: '', payment: 'cash' });
+            const [chatOpen, setChatOpen] = useState(false);
+            const [chatMessages, setChatMessages] = useState([{from: 'bot', text: 'Здравствуйте! Я дежурный фармацевт. Чем могу помочь?'}]);
+            const [chatInput, setChatInput] = useState('');
+            const [searchFocus, setSearchFocus] = useState(false);
+            const [timeLeft, setTimeLeft] = useState(3600 * 5); 
+
             const scrollRef = useRef(null);
             const isAdmin = user && user.login === ADMIN_NAME;
 
-            // ФУНКЦИЯ ЗАГРУЗКИ ИЗ БАЗЫ
             const fetchFromDB = async () => {
                 const { data, error } = await supabaseClient.from('items').select('*').order('created_at', { ascending: false });
-                if (!error && data) {
-                    // Разделяем на одобренные и неодобренные (если у вас есть колонка status, иначе просто грузим в items)
-                    setItems(data);
-                }
+                if (!error && data) { setItems(data); }
+            };
+
+            const showToast = (msg) => {
+                setToast(msg);
+                setTimeout(() => setToast(null), 3000);
             };
 
             useEffect(() => {
@@ -114,24 +201,61 @@
                 localStorage.setItem('apt_user', JSON.stringify(user));
                 localStorage.setItem('apt_accounts', JSON.stringify(accounts));
                 localStorage.setItem('dark_mode', darkMode);
+                localStorage.setItem('apt_fav', JSON.stringify(favorites));
+                localStorage.setItem('apt_viewed', JSON.stringify(viewed));
+                localStorage.setItem('apt_cart', JSON.stringify(cart));
+
                 document.getElementById('app-body').className = darkMode ? 'dark' : '';
                 if (window.lucide) lucide.createIcons();
-            }, [user, accounts, darkMode, modal, selectedProduct]);
+                
+                const timer = setInterval(() => {
+                    setCurrentBanner(prev => (prev + 1) % BANNERS.length);
+                }, 5000);
+                
+                const promoTimer = setInterval(() => {
+                    setTimeLeft(prev => prev > 0 ? prev - 1 : 0);
+                }, 1000);
+
+                return () => { clearInterval(timer); clearInterval(promoTimer); };
+            }, [user, accounts, darkMode, modal, selectedProduct, favorites, viewed, cart]);
+
+            const addToCart = (e, item) => {
+                e?.stopPropagation();
+                const existing = cart.find(c => c.id === item.id);
+                if (existing) {
+                    setCart(cart.map(c => c.id === item.id ? { ...c, qty: c.qty + 1 } : c));
+                    showToast(`Количество увеличено: ${existing.qty + 1}`);
+                } else {
+                    setCart([...cart, { ...item, qty: 1 }]);
+                    showToast("Товар добавлен в корзину");
+                }
+            };
+
+            const updateQty = (id, delta) => {
+                setCart(cart.map(c => {
+                    if (c.id === id) {
+                        const newQty = Math.max(1, c.qty + delta);
+                        return { ...c, qty: newQty };
+                    }
+                    return c;
+                }));
+            };
 
             const handleAuth = () => {
                 const name = loginInput.trim();
                 if (!name || !passInput) return alert("Заполните Имя и Пароль!");
                 if (accounts[name]) {
                     if (accounts[name].password === passInput) {
-                        setUser({ login: name });
+                        setUser({ login: name, bonuses: accounts[name].bonuses || 100 });
                         setModal(null);
+                        showToast("С возвращением, " + name + "!");
                     } else { alert("Неверный пароль!"); }
                 } else {
-                    const newAccs = { ...accounts, [name]: { password: passInput } };
+                    const newAccs = { ...accounts, [name]: { password: passInput, bonuses: 200 } };
                     setAccounts(newAccs);
-                    setUser({ login: name });
+                    setUser({ login: name, bonuses: 200 });
                     setModal(null);
-                    alert("Аккаунт создан: " + name);
+                    showToast("Аккаунт создан! +200 бонусов.");
                 }
                 setLoginInput(''); setPassInput('');
             };
@@ -143,36 +267,161 @@
                 }
             };
 
-            const filteredProducts = items.filter(i => {
+            const toggleFav = (e, item) => {
+                e.stopPropagation();
+                if (favorites.find(f => f.id === item.id)) {
+                    setFavorites(favorites.filter(f => f.id !== item.id));
+                    showToast("Удалено из избранного");
+                } else {
+                    setFavorites([...favorites, item]);
+                    showToast("Добавлено в избранное");
+                }
+            };
+
+            const addToHistory = (item) => {
+                const newViewed = [item, ...viewed.filter(v => v.id !== item.id)].slice(0, 10);
+                setViewed(newViewed);
+            };
+
+            const openProduct = (item) => {
+                addToHistory(item);
+                setSelectedProduct(item);
+                setActiveTab('desc');
+            };
+
+            const sendChatMessage = () => {
+                if(!chatInput.trim()) return;
+                setChatMessages([...chatMessages, {from: 'user', text: chatInput}]);
+                setChatInput('');
+                setTimeout(() => {
+                    setChatMessages(prev => [...prev, {from: 'bot', text: 'Спасибо за вопрос! Оператор ответит в течение 5 минут. Позвоните 0705 00-44-02 для срочной связи.'}]);
+                }, 1000);
+            };
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
+            };
+
+            // --- СОРТИРОВКА И ПОИСК ---
+            let filteredProducts = items.filter(i => {
                 const matchSearch = i.title.toLowerCase().includes(search.toLowerCase());
                 const matchCat = filter === 'Все товары' || i.type === filter;
                 const matchSub = subFilter === 'Все' || i.subType === subFilter;
                 return matchSearch && matchCat && matchSub;
             });
+            
+            const searchSuggestions = search.length > 1 ? items.filter(i => i.title.toLowerCase().includes(search.toLowerCase())).slice(0, 5) : [];
+
+            if (sortType === 'price_asc') filteredProducts.sort((a, b) => Number(a.price) - Number(b.price));
+            else if (sortType === 'price_desc') filteredProducts.sort((a, b) => Number(b.price) - Number(a.price));
+            else if (sortType === 'new') filteredProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+            const cartTotal = cart.reduce((a, b) => a + Number(b.price) * b.qty, 0);
 
             return (
-                <div className="min-h-screen">
-                    <button onClick={() => user ? setModal('sell') : setModal('auth')} className="btn-sell-float">
-                        <i data-lucide="plus-circle"></i> Продать
-                    </button>
-
-                    <header className="bg-white border-b sticky top-0 z-40 px-4 md:px-8 h-20 flex items-center justify-between gap-4 shadow-sm">
-                        <div className="text-2xl font-black text-blue-600 italic cursor-pointer" onClick={() => {setFilter('Все товары'); setSubFilter('Все');}}>APTEKA.KG</div>
-                        <div className="hidden md:flex flex-grow max-w-xl relative">
-                            <input type="text" placeholder="Поиск..." className="w-full bg-slate-100 rounded-2xl py-3 px-12 outline-none font-bold text-sm" onChange={(e) => setSearch(e.target.value)} />
-                            <i data-lucide="search" className="absolute left-4 top-3.5 text-slate-400"></i>
+                <div className="min-h-screen flex flex-col">
+                    {toast && (
+                        <div className="toast">
+                            <i data-lucide="check-circle" className="text-emerald-400"></i> {toast}
                         </div>
-                        <div className="flex items-center gap-3">
+                    )}
+
+                    {isAdmin && (
+                        <button onClick={() => setModal('sell')} className="btn-sell-float">
+                            <i data-lucide="plus"></i>
+                        </button>
+                    )}
+                    
+                    {/* ЧАТ */}
+                    <div className="chat-widget">
+                        {chatOpen && (
+                            <div className="chat-window">
+                                <div className="bg-blue-600 p-4 text-white flex justify-between items-center">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"><i data-lucide="user"></i></div>
+                                        <div className="text-xs font-bold"><div>Фармацевт</div><div className="text-[10px] text-green-200">Онлайн</div></div>
+                                    </div>
+                                    <button onClick={() => setChatOpen(false)}><i data-lucide="x" size={16}></i></button>
+                                </div>
+                                <div className="flex-grow bg-slate-50 p-4 overflow-y-auto space-y-3">
+                                    {chatMessages.map((m, i) => (
+                                        <div key={i} className={`p-3 rounded-xl text-xs max-w-[80%] ${m.from === 'bot' ? 'bg-white self-start border border-slate-100' : 'bg-blue-100 self-end ml-auto text-blue-900'}`}>
+                                            {m.text}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="p-3 bg-white border-t flex gap-2">
+                                    <input value={chatInput} onChange={e => setChatInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && sendChatMessage()} className="flex-grow bg-slate-100 rounded-lg px-3 py-2 text-xs outline-none" placeholder="Введите сообщение..." />
+                                    <button onClick={sendChatMessage} className="p-2 bg-blue-600 text-white rounded-lg"><i data-lucide="send" size={14}></i></button>
+                                </div>
+                            </div>
+                        )}
+                        <div onClick={() => setChatOpen(!chatOpen)} className="chat-btn">
+                            <i data-lucide="message-circle" size={28}></i>
+                        </div>
+                    </div>
+
+                    {/* Шапка */}
+                    <header className="bg-white border-b sticky top-0 z-40 px-4 md:px-8 h-[72px] flex items-center justify-between gap-4 shadow-sm">
+                        <div className="flex items-center gap-2" onClick={() => {setFilter('Все товары'); setSubFilter('Все');}}>
+                            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white"><i data-lucide="plus" size={20} strokeWidth={4}></i></div>
+                            <div className="text-2xl font-black text-blue-600 italic cursor-pointer tracking-tighter hidden md:block">APTEKA.KG</div>
+                        </div>
+                        
+                        <div className="flex-grow max-w-xl relative">
+                             <input 
+                                type="text" 
+                                placeholder="Поиск лекарств, симптомов..." 
+                                className="w-full bg-slate-100 rounded-xl py-3 px-12 outline-none font-bold text-sm border border-transparent focus:border-blue-500 focus:bg-white transition" 
+                                onChange={(e) => setSearch(e.target.value)}
+                                onFocus={() => setSearchFocus(true)}
+                                onBlur={() => setTimeout(() => setSearchFocus(false), 200)}
+                                value={search}
+                             />
+                            <i data-lucide="search" className="absolute left-4 top-3.5 text-slate-400 w-5 h-5"></i>
+                            
+                            {searchFocus && searchSuggestions.length > 0 && (
+                                <div className="search-dropdown">
+                                    {searchSuggestions.map(s => (
+                                        <div key={s.id} onClick={() => {setSearch(''); openProduct(s);}} className="search-item">
+                                            <img src={s.img || DEFAULT_IMG} className="w-8 h-8 object-contain" />
+                                            <div className="flex-grow">
+                                                <div className="text-xs font-bold text-slate-700">{s.title}</div>
+                                                <div className="text-[10px] text-slate-400">{s.type}</div>
+                                            </div>
+                                            <div className="text-blue-600 font-bold text-xs">{s.price} с</div>
+                                        </div>
+                                    ))}
+                                    <div className="p-3 text-center text-xs font-bold text-blue-600 border-t bg-slate-50 cursor-pointer">Показать все результаты</div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="hidden md:flex items-center gap-3">
                             <button onClick={() => setDarkMode(!darkMode)} className="p-3 bg-slate-100 rounded-xl transition hover:bg-slate-200">
-                                <i data-lucide={darkMode ? "sun" : "moon"}></i>
+                                <i data-lucide={darkMode ? "sun" : "moon"} size={20}></i>
                             </button>
-                            <button onClick={() => setModal('cart')} className="p-3 bg-blue-50 text-blue-600 rounded-xl relative">
-                                <i data-lucide="shopping-cart"></i>
-                                {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">{cart.length}</span>}
+                            <button onClick={() => setModal('favorites')} className="p-3 bg-red-50 text-red-500 rounded-xl relative hover:bg-red-100 transition">
+                                <i data-lucide="heart" size={20}></i>
+                                {favorites.length > 0 && <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">{favorites.length}</span>}
                             </button>
+                            <button onClick={() => setModal('cart')} className="p-3 bg-blue-50 text-blue-600 rounded-xl relative hover:bg-blue-100 transition">
+                                <i data-lucide="shopping-cart" size={20}></i>
+                                {cart.length > 0 && <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">{cart.reduce((a,b)=>a+b.qty,0)}</span>}
+                            </button>
+                            
                             {user ? (
-                                <div onClick={() => setModal('profile')} className="w-11 h-11 bg-blue-600 rounded-full flex items-center justify-center text-white font-black cursor-pointer border-2 border-white shadow-md">
-                                    {user.login[0].toUpperCase()}
+                                <div onClick={() => setModal('profile')} className="flex items-center gap-2 cursor-pointer bg-slate-50 p-1 pr-4 rounded-xl border border-slate-100 hover:border-blue-200 transition">
+                                    <div className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white font-black border-2 border-white shadow-sm">
+                                        {user.login[0].toUpperCase()}
+                                    </div>
+                                    <div className="flex flex-col leading-none">
+                                        <span className="text-[10px] font-bold text-slate-400">Бонусы</span>
+                                        <span className="text-xs font-black text-blue-600">{user.bonuses || 0}</span>
+                                    </div>
                                 </div>
                             ) : (
                                 <button onClick={() => setModal('auth')} className="btn-primary px-6 py-2.5 rounded-xl font-bold text-xs uppercase">Войти</button>
@@ -180,65 +429,208 @@
                         </div>
                     </header>
 
-                    <div className="max-w-7xl mx-auto px-4 py-8">
-                        <div className="relative flex items-center">
-                            <button onClick={() => scrollRef.current.scrollBy({left: -350, behavior: 'smooth'})} className="scroll-arrow -left-2 md:-left-6">
-                                <i data-lucide="chevron-left" size={24}></i>
-                            </button>
-                            <div ref={scrollRef} className="category-container no-scrollbar w-full">
-                                {CATEGORY_LIST.map(cat => (
-                                    <button key={cat.name} onClick={() => {setFilter(cat.name); setSubFilter('Все');}} className={`flex items-center gap-3 px-7 py-5 rounded-2xl font-black text-[11px] whitespace-nowrap uppercase border shadow-sm transition-all ${filter === cat.name ? 'apteka-blue text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200'}`}>
-                                        <span className="text-xl">{cat.icon}</span> {cat.name}
-                                    </button>
+                    <div className="max-w-7xl mx-auto px-4 py-6 w-full">
+                        {/* Слайдер Баннеров */}
+                        <div className="mb-8 relative overflow-hidden rounded-[2rem] shadow-xl h-48 md:h-72 cursor-pointer group">
+                             {BANNERS.map((banner, index) => (
+                                <div key={banner.id} 
+                                     className={`absolute inset-0 p-8 md:p-12 flex flex-col justify-center ${banner.color} transition-all duration-700 ease-in-out`}
+                                     style={{ transform: `translateX(${(index - currentBanner) * 100}%)` }}>
+                                    <div className="relative z-10 max-w-lg">
+                                         <span className="bg-white/20 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase mb-4 inline-block backdrop-blur-sm shadow-sm">Акция</span>
+                                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic mb-2 leading-tight drop-shadow-md">{banner.title}</h2>
+                                         <p className="text-white/95 font-bold text-sm md:text-lg drop-shadow-sm">{banner.sub}</p>
+                                         <button className="mt-6 bg-white text-slate-900 px-6 py-3 rounded-xl font-black text-xs uppercase shadow-lg hover:scale-105 transition">Подробнее</button>
+                                    </div>
+                                    <div className="absolute right-4 bottom-4 md:right-12 md:bottom-8 text-8xl opacity-30 rotate-12">{banner.img}</div>
+                                 </div>
+                            ))}
+                             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                                {BANNERS.map((_, idx) => (
+                                    <div key={idx} onClick={() => setCurrentBanner(idx)} className={`w-2 h-2 rounded-full transition-all cursor-pointer ${currentBanner === idx ? 'bg-white w-6' : 'bg-white/50'}`}></div>
                                 ))}
                             </div>
-                            <button onClick={() => scrollRef.current.scrollBy({left: 350, behavior: 'smooth'})} className="scroll-arrow -right-2 md:-right-6">
+                        </div>
+
+                        {/* Навигация категорий */}
+                        <div className="relative flex items-center mb-6">
+                            <button onClick={() => scrollRef.current.scrollBy({left: -300, behavior: 'smooth'})} className="scroll-arrow -left-3 hidden md:flex">
+                                 <i data-lucide="chevron-left" size={24}></i>
+                            </button>
+                            <div ref={scrollRef} className="category-container no-scrollbar w-full">
+                                 {CATEGORY_LIST.map(cat => (
+                                    <button key={cat.name} onClick={() => {setFilter(cat.name); setSubFilter('Все');}} className={`flex flex-col items-center justify-center gap-3 px-2 py-4 rounded-[20px] font-bold text-[10px] whitespace-nowrap uppercase border transition-all min-w-[90px] h-[100px] ${filter === cat.name ? 'bg-blue-50 text-blue-600 border-blue-200 shadow-inner' : 'bg-white text-slate-500 border-transparent hover:bg-slate-50 shadow-sm'}`}>
+                                        <span className="text-3xl filter drop-shadow-sm">{cat.icon}</span> 
+                                        <span>{cat.name}</span>
+                                     </button>
+                                ))}
+                            </div>
+                             <button onClick={() => scrollRef.current.scrollBy({left: 300, behavior: 'smooth'})} className="scroll-arrow -right-3 hidden md:flex">
                                 <i data-lucide="chevron-right" size={24}></i>
                             </button>
                         </div>
 
-                        {filter !== 'Все товары' && (
-                            <div className="flex gap-3 overflow-x-auto no-scrollbar mt-6 py-2">
-                                <button onClick={() => setSubFilter('Все')} className={`subcat-btn ${subFilter === 'Все' ? 'active' : 'bg-white text-slate-500'}`}>Все {filter}</button>
-                                {CATEGORIES_DATA[filter].map(sub => (
-                                    <button key={sub} onClick={() => setSubFilter(sub)} className={`subcat-btn ${subFilter === sub ? 'active' : 'bg-white text-slate-500'}`}>{sub}</button>
-                                ))}
+                        {/* Подкатегории и Сортировка */}
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                            {filter !== 'Все товары' ? (
+                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2 w-full md:w-auto">
+                                    <button onClick={() => setSubFilter('Все')} className={`subcat-btn ${subFilter === 'Все' ? 'active' : 'bg-white text-slate-500'}`}>Все {filter}</button>
+                                    {CATEGORIES_DATA[filter].map(sub => (
+                                        <button key={sub} onClick={() => setSubFilter(sub)} className={`subcat-btn ${subFilter === sub ? 'active' : 'bg-white text-slate-500'}`}>{sub}</button>
+                                    ))}
+                                </div>
+                            ) : <div></div>}
+                            
+                            <div className="relative group w-full md:w-auto">
+                                <select value={sortType} onChange={(e) => setSortType(e.target.value)} className="appearance-none bg-white border border-slate-200 text-slate-600 py-3 pl-4 pr-10 rounded-xl text-xs font-bold uppercase cursor-pointer focus:border-blue-500 outline-none w-full shadow-sm">
+                                    {SORT_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                                </select>
+                                <i data-lucide="arrow-up-down" className="absolute right-3 top-3.5 text-slate-400 w-4 h-4 pointer-events-none"></i>
                             </div>
-                        )}
+                        </div>
                     </div>
 
-                    <main className="max-w-7xl mx-auto px-4 grid grid-cols-2 lg:grid-cols-4 gap-6 pb-32">
-                        {filteredProducts.map(item => (
-                            <div key={item.id} onClick={() => setSelectedProduct(item)} className="bg-white rounded-[2.5rem] p-4 border border-slate-50 flex flex-col cursor-pointer transition-all hover:shadow-xl relative group">
-                                {isAdmin && (
-                                    <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }} className="absolute top-6 right-6 z-10 bg-red-500 text-white p-2 rounded-full shadow-lg"><i data-lucide="trash-2" size={14}></i></button>
-                                )}
-                                <div className="h-44 bg-slate-50 rounded-[2rem] mb-4 flex items-center justify-center overflow-hidden">
-                                    <img src={item.img || DEFAULT_IMG} className="h-full w-full object-contain p-4 group-hover:scale-110 transition duration-500" />
-                                </div>
-                                <h3 className="font-bold text-sm px-2 truncate uppercase">{item.title}</h3>
-                                <div className="mt-auto flex justify-between items-center bg-slate-50 p-3 rounded-2xl mt-4">
-                                    <b className="text-blue-600">{item.price} с</b>
-                                    <button onClick={(e) => { e.stopPropagation(); setCart([...cart, {...item, cid: Date.now()}]); }} className="bg-blue-600 text-white p-2 rounded-xl active:scale-90 transition">
-                                        <i data-lucide="plus" size={18}></i>
+                    {/* Сетка товаров */}
+                    <main className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-4 pb-20 w-full flex-grow">
+                        {filteredProducts.length === 0 && (
+                             <div className="col-span-full text-center py-20 opacity-40">
+                                <i data-lucide="search-x" className="mx-auto mb-4" size={48}></i>
+                                <p className="font-bold uppercase">Ничего не найдено</p>
+                             </div>
+                        )}
+                        {filteredProducts.map(item => {
+                            const isFav = favorites.some(f => f.id === item.id);
+                            const isHit = item.id % 3 === 0;
+                            const isNew = item.id % 5 === 0;
+                            const isDiscount = item.id % 7 === 0;
+
+                            return (
+                                <div key={item.id} onClick={() => openProduct(item)} className="bg-white rounded-[24px] p-3 border border-slate-100 flex flex-col cursor-pointer transition-all hover:shadow-xl hover:-translate-y-1 relative group h-full">
+                                    
+                                    <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+                                        {isHit && <span className="badge badge-hit">ХИТ</span>}
+                                        {isDiscount && <span className="badge badge-discount">-15%</span>}
+                                        {isNew && <span className="badge badge-new">NEW</span>}
+                                    </div>
+
+                                    <button onClick={(e) => toggleFav(e, item)} className={`absolute top-3 right-3 z-10 p-2 rounded-full transition ${isFav ? 'text-red-500 bg-red-50' : 'text-slate-300 bg-white/50 hover:text-red-400'}`}>
+                                        <i data-lucide="heart" fill={isFav ? "currentColor" : "none"} size={16}></i>
                                     </button>
+
+                                    {isAdmin && (
+                                        <button onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }} className="absolute bottom-36 right-4 z-10 bg-red-100 text-red-500 p-2 rounded-full hover:bg-red-500 hover:text-white transition"><i data-lucide="trash-2" size={14}></i></button>
+                                    )}
+                                    <div className="h-40 bg-slate-50 rounded-[18px] mb-3 flex items-center justify-center overflow-hidden relative">
+                                         <img src={item.img || DEFAULT_IMG} className="h-full w-full object-contain p-4 group-hover:scale-110 transition duration-500 mix-blend-multiply" />
+                                    </div>
+                                    <div className="px-1 flex-grow flex flex-col">
+                                        <div className="text-[10px] text-slate-400 font-bold uppercase mb-1">{item.type}</div>
+                                        <h3 className="font-bold text-xs leading-snug line-clamp-2 mb-2 text-slate-800">{item.title}</h3>
+                                        
+                                        <div className="flex items-center gap-1 mb-2">
+                                            {[1,2,3,4,5].map(s => <i key={s} data-lucide="star" size={10} className="fill-orange-400 text-orange-400"></i>)}
+                                            <span className="text-[10px] text-slate-400 ml-1">(4)</span>
+                                        </div>
+
+                                        <div className="mt-auto flex justify-between items-center pt-2">
+                                            <div className="flex flex-col">
+                                                {isDiscount && <span className="text-[10px] line-through text-slate-400 font-bold">{(Number(item.price) * 1.15).toFixed(0)} c</span>}
+                                                <b className={`text-lg font-black ${isDiscount ? 'text-red-500' : 'text-blue-600'}`}>{item.price} c</b>
+                                            </div>
+                                            <button onClick={(e) => addToCart(e, item)} className="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white p-3 rounded-full active:scale-90 transition shadow-sm">
+                                                <i data-lucide="plus" size={18}></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </main>
+                    
+                    {/* Слайдер Брендов (ОБНОВЛЕННЫЙ) */}
+                    <div className="py-8 bg-white border-t border-b overflow-hidden">
+                        <div className="max-w-7xl mx-auto mb-4 px-4"><h3 className="font-black text-slate-300 uppercase text-xs tracking-widest">Популярные бренды</h3></div>
+                        <div className="brands-slide gap-12 px-4">
+                            {[...BRANDS, ...BRANDS].map((b, i) => (
+                                <div key={i} onClick={() => { setSearch(b); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="text-2xl font-black text-slate-300 uppercase italic whitespace-nowrap hover:text-blue-600 cursor-pointer transition">
+                                    {b}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <footer className="mt-auto bg-slate-50 pt-12 px-4 pb-24 md:pb-12">
+                         <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-8 mb-8">
+                            <div>
+                                <h3 className="text-blue-600 font-black italic text-2xl mb-4">APTEKA.KG</h3>
+                                 <p className="text-xs text-slate-500 font-medium">Сервис заказа лекарств. Лицензия № ЛО-99-02-00000 от 2023 г.</p>
+                                 <div className="flex gap-2 mt-4">
+                                    <div className="bg-slate-900 text-white p-2 rounded-lg text-xs cursor-pointer hover:bg-slate-800 transition"><i data-lucide="apple" className="inline mr-1" size={12}></i>App Store</div>
+                                    <div className="bg-slate-900 text-white p-2 rounded-lg text-xs cursor-pointer hover:bg-slate-800 transition"><i data-lucide="play" className="inline mr-1" size={12}></i>Google Play</div>
+                                 </div>
+                            </div>
+                            <div>
+                                <h4 className="font-bold uppercase text-xs mb-4 text-slate-900">Покупателям</h4>
+                                 <ul className="text-xs text-slate-500 space-y-2 font-medium">
+                                    <li><a href="#" className="hover:text-blue-600">Как сделать заказ</a></li>
+                                    <li><a href="#" className="hover:text-blue-600">Оплата и доставка</a></li>
+                                    <li><a href="#" className="hover:text-blue-600">Возврат товара</a></li>
+                                    <li><a href="#" className="hover:text-blue-600">Бонусная программа</a></li>
+                                </ul>
+                             </div>
+                            <div>
+                                <h4 className="font-bold uppercase text-xs mb-4 text-slate-900">Компания</h4>
+                                 <ul className="text-xs text-slate-500 space-y-2 font-medium">
+                                    <li><a href="#" className="hover:text-blue-600">О нас</a></li>
+                                    <li><a href="#" className="hover:text-blue-600">Контакты</a></li>
+                                    <li><a href="#" className="hover:text-blue-600">Вакансии</a></li>
+                                </ul>
+                            </div>
+                             <div>
+                                <h4 className="font-bold uppercase text-xs mb-4 text-slate-900">Контакты</h4>
+                                <p className="text-xs text-slate-500 mb-2">г. Ош, ул. Черемушки</p>
+                                <p className="text-blue-600 font-black text-lg">0705 00-44-02</p>
+                                <div className="flex gap-4 mt-3 text-slate-400">
+                                    <i data-lucide="instagram" className="hover:text-pink-500 transition cursor-pointer"></i>
+                                    <i data-lucide="facebook" className="hover:text-blue-600 transition cursor-pointer"></i>
+                                    <i data-lucide="send" className="hover:text-sky-500 transition cursor-pointer"></i>
                                 </div>
                             </div>
-                        ))}
-                    </main>
+                        </div>
+                        <div className="max-w-7xl mx-auto border-t pt-8 text-center">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest border border-red-200 p-4 rounded-xl inline-block bg-red-50/50 text-red-400">
+                                <i data-lucide="alert-triangle" className="inline w-3 h-3 mb-1 mr-1"></i>
+                                 Имеются противопоказания. Необходима консультация специалиста.
+                            </p>
+                            <p className="text-[10px] text-slate-300 mt-4">© 2026 APTEKA.KG. Все права защищены.</p>
+                        </div>
+                    </footer>
+                    
+                    {/* Bottom Bar (Mobile Only) */}
+                    <div className="bottom-bar md:hidden">
+                        <div onClick={() => {setFilter('Все товары'); window.scrollTo(0,0)}} className={`nav-item ${filter === 'Все товары' ? 'active' : ''}`}><i data-lucide="home"></i><span>Главная</span></div>
+                        <div onClick={() => setModal('favorites')} className="nav-item"><i data-lucide="heart"></i><span>Избранное</span></div>
+                        <div onClick={() => setModal('cart')} className={`nav-item ${cart.length > 0 ? 'active' : ''}`}>
+                            <div className="relative"><i data-lucide="shopping-cart"></i>{cart.length > 0 && <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>}</div>
+                            <span>Корзина</span>
+                        </div>
+                        <div onClick={() => setModal(user ? 'profile' : 'auth')} className="nav-item"><i data-lucide="user"></i><span>Профиль</span></div>
+                    </div>
 
+                    {/* Модалки */}
                     {modal === 'auth' && (
                         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
                             <div className="bg-white w-full max-w-sm rounded-[3rem] p-10 shadow-2xl modal-animate text-center relative">
                                 <button onClick={() => setModal(null)} className="absolute top-6 right-6 text-slate-300"><i data-lucide="x"></i></button>
                                 <h2 className="text-2xl font-black uppercase mb-2 italic text-blue-600">Вход</h2>
                                 <p className="text-[10px] text-slate-400 font-bold uppercase mb-8">Введите Имя и Пароль</p>
-                                <div className="space-y-4 text-left">
+                                 <div className="space-y-4 text-left">
                                     <div>
                                         <label className="text-[10px] font-black uppercase px-2 text-slate-400">Имя (Логин)</label>
                                         <input value={loginInput} onChange={e => setLoginInput(e.target.value)} className="input-style mt-1" placeholder="Логин" />
                                     </div>
-                                    <div>
+                                     <div>
                                         <label className="text-[10px] font-black uppercase px-2 text-slate-400">Пароль</label>
                                         <input type="password" value={passInput} onChange={e => setPassInput(e.target.value)} className="input-style mt-1" placeholder="••••••" />
                                     </div>
@@ -251,17 +643,44 @@
                     {modal === 'profile' && user && (
                         <div className="fixed inset-0 z-[120] flex justify-end">
                             <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setModal(null)}></div>
-                            <div className="relative w-full max-w-sm bg-white h-screen p-8 flex flex-col modal-animate shadow-2xl">
+                             <div className="relative w-full max-w-sm bg-white h-screen p-8 flex flex-col modal-animate shadow-2xl">
                                 <button onClick={() => setModal(null)} className="absolute top-6 right-6 p-2 bg-slate-100 rounded-full"><i data-lucide="x"></i></button>
-                                <div className="mt-12 text-center mb-8">
+                                 <div className="mt-12 text-center mb-8">
                                     <div className="w-24 h-24 mx-auto mb-4 bg-blue-600 rounded-[2rem] flex items-center justify-center text-white text-4xl font-black shadow-lg">{user.login[0].toUpperCase()}</div>
                                     <div className="font-black text-xl italic text-blue-600">{user.login}</div>
+                                    <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-1 rounded-full text-xs font-bold mt-2">
+                                        <i data-lucide="coins" size={12}></i> {user.bonuses} бонусов
+                                    </div>
                                     {isAdmin && <span className="text-[10px] font-black text-red-500 uppercase tracking-widest mt-2 block">Администратор</span>}
                                 </div>
-                                <div className="space-y-3 flex-grow">
-                                    <button className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px]">Мои товары <i data-lucide="chevron-right"></i></button>
+                                 <div className="space-y-3 flex-grow">
+                                    <button onClick={() => setModal('favorites')} className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px] hover:bg-slate-100">Избранное <i data-lucide="heart" size={14}></i></button>
+                                    <button className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px] hover:bg-slate-100">Мои заказы <i data-lucide="package" size={14}></i></button>
+                                    <button className="w-full flex justify-between p-5 bg-slate-50 rounded-2xl font-black uppercase text-[10px] hover:bg-slate-100">Настройки <i data-lucide="settings" size={14}></i></button>
                                 </div>
-                                <button onClick={() => { setUser(null); setModal(null); }} className="w-full p-5 text-red-500 font-black uppercase text-[10px] bg-red-50 rounded-2xl mt-4 hover:bg-red-100 transition">Выйти из аккаунта</button>
+                                 <button onClick={() => { setUser(null); setModal(null); }} className="w-full p-5 text-red-500 font-black uppercase text-[10px] bg-red-50 rounded-2xl mt-4 hover:bg-red-100 transition">Выйти из аккаунта</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {modal === 'favorites' && (
+                        <div className="fixed inset-0 z-[120] flex justify-end">
+                            <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setModal(null)}></div>
+                             <div className="relative w-full max-w-md bg-white h-screen shadow-2xl flex flex-col p-8 modal-animate">
+                                <div className="flex justify-between items-center mb-8">
+                                    <h2 className="text-2xl font-black uppercase italic text-red-500">Избранное</h2>
+                                    <button onClick={() => setModal(null)} className="p-2 bg-slate-100 rounded-full"><i data-lucide="x"></i></button>
+                                </div>
+                                <div className="flex-grow overflow-y-auto space-y-4 no-scrollbar">
+                                    {favorites.length === 0 ? <div className="text-center py-20 opacity-20 text-3xl font-black uppercase">Нет товаров</div> : 
+                                    favorites.map(i => (
+                                        <div key={i.id} onClick={() => {setModal(null); openProduct(i);}} className="flex gap-4 items-center bg-slate-50 p-4 rounded-3xl border border-slate-100 cursor-pointer hover:bg-white hover:shadow-lg transition">
+                                            <img src={i.img || DEFAULT_IMG} className="w-12 h-12 object-contain mix-blend-multiply" />
+                                            <div className="flex-grow min-w-0"><h4 className="font-bold text-xs uppercase truncate">{i.title}</h4><b className="text-blue-600 font-black">{i.price} c</b></div>
+                                            <button onClick={(e) => toggleFav(e, i)} className="text-red-500 p-2"><i data-lucide="trash-2" size={16}></i></button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -274,40 +693,26 @@
                                     <input id="sell-title" className="input-style text-xs" placeholder="Название товара" />
                                     <div className="grid grid-cols-2 gap-3">
                                         <select id="sell-type" className="input-style text-xs uppercase font-black">
-                                            {Object.keys(CATEGORIES_DATA).filter(k => k !== 'Все товары').map(k => <option key={k} value={k}>{k}</option>)}
+                                             {Object.keys(CATEGORIES_DATA).filter(k => k !== 'Все товары').map(k => <option key={k} value={k}>{k}</option>)}
                                         </select>
-                                        <input id="sell-price" type="number" className="input-style text-xs" placeholder="Цена (сом)" />
+                                         <input id="sell-price" type="number" className="input-style text-xs" placeholder="Цена (сом)" />
                                     </div>
                                     <input id="sell-phone" type="tel" className="input-style text-xs" placeholder="Номер WhatsApp (напр: 996700123456)" />
                                     <textarea id="sell-desc" className="input-style h-28 resize-none text-xs" placeholder="Описание товара"></textarea>
                                 </div>
                                 <button onClick={async () => {
+                                    if (!isAdmin) return alert("ОШИБКА: Только администратор может публиковать товары!");
                                     const t = document.getElementById('sell-title').value;
                                     const p = document.getElementById('sell-price').value;
                                     const ph = document.getElementById('sell-phone').value;
                                     const d = document.getElementById('sell-desc').value;
                                     const ty = document.getElementById('sell-type').value;
-
                                     if(!t || !p || !ph) return alert("ОШИБКА: Заполните название, цену и номер WhatsApp!");
-
-                                    // СОХРАНЕНИЕ В SUPABASE (Исправлено на description)
                                     const { error } = await supabaseClient.from('items').insert([{
-                                        title: t,
-                                        price: p,
-                                        phone: ph.replace(/\D/g, ''),
-                                        type: ty,
-                                        description: d, // Исправлено здесь
-                                        owner: user.login,
-                                        img: DEFAULT_IMG
+                                        title: t, price: p, phone: ph.replace(/\D/g, ''), type: ty, description: d, owner: user.login, img: DEFAULT_IMG
                                     }]);
-
-                                    if (error) {
-                                        alert("Ошибка сохранения в базу: " + error.message);
-                                    } else {
-                                        setModal(null);
-                                        fetchFromDB();
-                                        alert("Объявление успешно опубликовано!");
-                                    }
+                                    if (error) { alert("Ошибка сохранения в базу: " + error.message); } 
+                                    else { setModal(null); fetchFromDB(); alert("Объявление успешно опубликовано!"); }
                                 }} className="w-full btn-primary py-5 rounded-3xl font-black uppercase text-sm mt-6 shadow-xl active:scale-95 transition">Опубликовать</button>
                             </div>
                         </div>
@@ -315,31 +720,98 @@
 
                     {selectedProduct && (
                         <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/70 backdrop-blur-sm p-0 md:p-4">
-                            <div className="bg-white w-full max-w-2xl h-[90vh] md:h-auto md:max-h-[90vh] rounded-t-[3rem] md:rounded-[3rem] overflow-hidden flex flex-col modal-animate">
-                                <div className="relative h-72 md:h-96 bg-slate-50 flex items-center justify-center p-10">
-                                    <img src={selectedProduct.img || DEFAULT_IMG} className="max-w-full max-h-full object-contain p-4" />
-                                    <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 bg-black text-white p-3 rounded-full shadow-2xl active:scale-90 transition"><i data-lucide="x"></i></button>
-                                </div>
-                                <div className="p-8 overflow-y-auto flex-grow no-scrollbar">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <h2 className="text-3xl font-black uppercase leading-tight">{selectedProduct.title}</h2>
-                                        <div className="text-3xl font-black text-blue-600">{selectedProduct.price} с</div>
-                                    </div>
-                                    <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 mt-4">
-                                        <p className="text-slate-500 font-medium leading-relaxed whitespace-pre-line text-sm">{selectedProduct.description || 'Описание отсутствует.'}</p>
-                                    </div>
-                                    <div className="mt-6 flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-black">{selectedProduct.owner ? selectedProduct.owner[0].toUpperCase() : '?'}</div>
-                                        <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Продавец: {selectedProduct.owner || 'Неизвестен'}</div>
+                             <div className="bg-white w-full max-w-3xl h-[95vh] md:h-[90vh] rounded-t-[3rem] md:rounded-[3rem] overflow-hidden flex flex-col modal-animate">
+                                {/* Верхняя часть с фото */}
+                                <div className="relative h-64 md:h-80 bg-slate-50 flex items-center justify-center p-8 shrink-0">
+                                    <img src={selectedProduct.img || DEFAULT_IMG} className="max-w-full max-h-full object-contain mix-blend-multiply" />
+                                    <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6 bg-white/80 backdrop-blur p-3 rounded-full shadow-lg active:scale-90 transition z-10 hover:rotate-90"><i data-lucide="x"></i></button>
+                                    
+                                    <div className="absolute top-6 left-6 flex flex-col gap-2">
+                                        <span className="bg-blue-600 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-lg">Арт: {selectedProduct.id}102</span>
+                                        <span className="bg-red-500 text-white px-3 py-1 rounded-lg text-[10px] font-black uppercase shadow-lg flex items-center gap-1"><i data-lucide="clock" size={10}></i> {formatTime(timeLeft)}</span>
                                     </div>
                                 </div>
-                                <div className="p-8 border-t flex flex-col gap-3 bg-white">
+                                
+                                <div className="flex-grow overflow-y-auto no-scrollbar bg-white flex flex-col">
+                                    <div className="p-8 pb-4">
+                                        <div className="flex justify-between items-start gap-4 mb-4">
+                                            <h2 className="text-2xl md:text-3xl font-black uppercase leading-tight text-slate-800">{selectedProduct.title}</h2>
+                                            <div className="text-right">
+                                                <div className="text-3xl font-black text-blue-600 whitespace-nowrap">{selectedProduct.price} с</div>
+                                                <div className="text-[10px] text-green-500 font-bold uppercase flex items-center justify-end gap-1"><div className="w-2 h-2 rounded-full bg-green-500"></div> В наличии</div>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs font-bold text-slate-500 mb-6 bg-slate-50 p-3 rounded-xl">
+                                            <span className="flex items-center gap-1"><i data-lucide="factory" size={14} className="text-blue-500"></i> PharmInc</span>
+                                            <span className="w-px h-4 bg-slate-300"></span>
+                                            <span className="flex items-center gap-1"><i data-lucide="flag" size={14} className="text-blue-500"></i> Германия</span>
+                                            <span className="w-px h-4 bg-slate-300"></span>
+                                            <span className="flex items-center gap-1"><i data-lucide="star" size={14} className="text-orange-400"></i> 4.8</span>
+                                        </div>
+
+                                        {/* Табы */}
+                                        <div className="flex border-b mb-6 overflow-x-auto no-scrollbar">
+                                            <button onClick={() => setActiveTab('desc')} className={`tab-btn ${activeTab === 'desc' ? 'active' : ''}`}>Описание</button>
+                                            <button onClick={() => setActiveTab('specs')} className={`tab-btn ${activeTab === 'specs' ? 'active' : ''}`}>Характеристики</button>
+                                            <button onClick={() => setActiveTab('reviews')} className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}>Отзывы (4)</button>
+                                        </div>
+
+                                        <div className="min-h-[150px]">
+                                            {activeTab === 'desc' && (
+                                                <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
+                                                    <p className="text-slate-600 font-medium leading-relaxed whitespace-pre-line text-sm">{selectedProduct.description || 'Инструкция по применению скоро появится.'}</p>
+                                                </div>
+                                            )}
+                                            {activeTab === 'specs' && (
+                                                <div className="space-y-3">
+                                                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-2"><span className="text-slate-400 text-xs font-bold uppercase">Форма выпуска</span><span className="font-bold text-xs">Таблетки</span></div>
+                                                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-2"><span className="text-slate-400 text-xs font-bold uppercase">Дозировка</span><span className="font-bold text-xs">500 мг</span></div>
+                                                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-2"><span className="text-slate-400 text-xs font-bold uppercase">В упаковке</span><span className="font-bold text-xs">20 шт</span></div>
+                                                    <div className="flex justify-between border-b border-dashed border-slate-200 pb-2"><span className="text-slate-400 text-xs font-bold uppercase">Срок годности</span><span className="font-bold text-xs">2028 г</span></div>
+                                                </div>
+                                            )}
+                                            {activeTab === 'reviews' && (
+                                                <div className="space-y-4">
+                                                    {FAKE_REVIEWS.map((r, i) => (
+                                                        <div key={i} className="bg-slate-50 p-4 rounded-2xl">
+                                                            <div className="flex justify-between items-center mb-2">
+                                                                <span className="font-black text-xs uppercase">{r.user}</span>
+                                                                <span className="text-[10px] text-slate-400 font-bold">{r.date}</span>
+                                                            </div>
+                                                            <div className="flex mb-2">{[...Array(5)].map((_, idx) => <i key={idx} data-lucide="star" size={10} className={idx < r.rating ? "fill-orange-400 text-orange-400" : "text-slate-300"}></i>)}</div>
+                                                            <p className="text-xs text-slate-500 font-medium">{r.text}</p>
+                                                        </div>
+                                                    ))}
+                                                    <button className="w-full py-3 border border-blue-600 text-blue-600 rounded-xl font-bold text-xs uppercase hover:bg-blue-50 transition">Написать отзыв</button>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {viewed.length > 1 && (
+                                            <div className="mt-8">
+                                                <h4 className="font-black uppercase text-xs text-slate-400 mb-4">Вы недавно смотрели</h4>
+                                                <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                                                    {viewed.filter(v => v.id !== selectedProduct.id).map(v => (
+                                                        <div key={v.id} onClick={() => openProduct(v)} className="w-24 flex-shrink-0 cursor-pointer group">
+                                                            <div className="w-24 h-24 bg-slate-50 rounded-xl p-2 mb-2 border group-hover:border-blue-300 transition"><img src={v.img || DEFAULT_IMG} className="w-full h-full object-contain mix-blend-multiply" /></div>
+                                                            <div className="text-[10px] font-bold truncate">{v.title}</div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="p-6 border-t flex gap-3 bg-white shrink-0 z-20 shadow-[0_-10px_40px_rgba(0,0,0,0.05)]">
                                     {selectedProduct.phone && (
-                                        <a href={`https://wa.me/${selectedProduct.phone}?text=${encodeURIComponent('Здравствуйте! Я по поводу товара: ' + selectedProduct.title)}`} target="_blank" className="w-full bg-[#25D366] text-white py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition text-center flex items-center justify-center gap-2">
-                                            <i data-lucide="message-circle"></i> Написать в WhatsApp
+                                        <a href={`https://wa.me/${selectedProduct.phone}?text=${encodeURIComponent('Здравствуйте! Я по поводу товара: ' + selectedProduct.title)}`} target="_blank" className="bg-[#25D366] text-white p-4 rounded-2xl shadow-xl active:scale-95 transition flex items-center justify-center w-16 h-16 shrink-0">
+                                            <i data-lucide="message-circle" size={28}></i>
                                         </a>
                                     )}
-                                    <button onClick={() => { setCart([...cart, {...selectedProduct, cid: Date.now()}]); setSelectedProduct(null); }} className="w-full btn-primary py-5 rounded-3xl font-black uppercase text-lg shadow-xl active:scale-95 transition">Добавить в корзину</button>
+                                    <button onClick={(e) => addToCart(e, selectedProduct)} className="w-full btn-primary py-4 rounded-2xl font-black uppercase text-lg shadow-xl active:scale-95 transition flex items-center justify-center gap-2">
+                                        В корзину <span className="text-white/70 text-sm font-normal">| {selectedProduct.price} с</span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -351,23 +823,95 @@
                             <div className="relative w-full max-w-md bg-white h-screen shadow-2xl flex flex-col p-8 modal-animate">
                                 <div className="flex justify-between items-center mb-8"><h2 className="text-2xl font-black uppercase italic text-blue-600">Корзина</h2><button onClick={() => setModal(null)} className="p-2 bg-slate-100 rounded-full"><i data-lucide="x"></i></button></div>
                                 <div className="flex-grow overflow-y-auto space-y-4 no-scrollbar">
-                                    {cart.length === 0 ? <div className="text-center py-20 opacity-20 text-3xl font-black uppercase">Пусто</div> : м
+                                    {cart.length === 0 ? <div className="text-center py-20 opacity-20 text-3xl font-black uppercase">Пусто</div> : 
                                     cart.map(i => (
-                                        <div key={i.cid} className="flex gap-4 items-center bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                                            <div className="flex-grow min-w-0"><h4 className="font-bold text-xs uppercase truncate">{i.title}</h4><b className="text-blue-600 font-black">{i.price} сом</b></div>
-                                            <button onClick={() => setCart(cart.filter(c => c.cid !== i.cid))} className="text-red-400 p-2 hover:bg-red-50 rounded-xl transition"><i data-lucide="trash-2" size={20}></i></button>
+                                        <div key={i.id} className="flex gap-4 items-center bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                                            <div className="flex-grow min-w-0">
+                                                <h4 className="font-bold text-xs uppercase truncate">{i.title}</h4>
+                                                <b className="text-blue-600 font-black">{i.price} сом</b>
+                                            </div>
+                                            <div className="flex items-center gap-3 bg-white px-2 py-1 rounded-lg border">
+                                                <button onClick={() => updateQty(i.id, -1)} className="text-slate-400 hover:text-blue-600 font-bold">-</button>
+                                                <span className="font-black text-sm w-4 text-center">{i.qty}</span>
+                                                <button onClick={() => updateQty(i.id, 1)} className="text-slate-400 hover:text-blue-600 font-bold">+</button>
+                                            </div>
+                                            <button onClick={() => setCart(cart.filter(c => c.id !== i.id))} className="text-red-400 p-2 hover:bg-red-50 rounded-xl transition"><i data-lucide="trash-2" size={20}></i></button>
                                         </div>
                                     ))}
                                 </div>
                                 {cart.length > 0 && (
                                     <div className="pt-6 border-t mt-6">
-                                        <div className="flex justify-between items-center mb-6"><span className="font-black uppercase text-xs text-slate-400">Итого:</span><span className="text-3xl font-black text-blue-600">{cart.reduce((a, b) => a + Number(b.price), 0)} с</span></div>
-                                        <button onClick={() => {alert("Заказ принят!"); setCart([]); setModal(null);}} className="w-full btn-primary py-6 rounded-3xl font-black uppercase text-lg shadow-xl">Оформить заказ</button>
+                                         <div className="flex justify-between items-center mb-2"><span className="font-bold text-xs text-slate-400">Товары ({cart.reduce((a,b)=>a+b.qty,0)})</span><span className="font-bold text-slate-700">{cartTotal} с</span></div>
+                                         <div className="flex justify-between items-center mb-6"><span className="font-black uppercase text-xs text-slate-400">Итого к оплате:</span><span className="text-3xl font-black text-blue-600">{cartTotal} с</span></div>
+                                        <button onClick={() => { setModal('checkout'); setCheckoutStep(1); }} className="w-full btn-primary py-6 rounded-3xl font-black uppercase text-lg shadow-xl">Оформить заказ</button>
                                     </div>
                                 )}
                             </div>
                         </div>
                     )}
+
+                    {/* Checkout */}
+                    {modal === 'checkout' && (
+                        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+                            <div className="bg-white w-full max-w-lg rounded-[2rem] p-8 shadow-2xl modal-animate relative">
+                                <button onClick={() => setModal('cart')} className="absolute top-6 left-6 text-slate-400 hover:text-blue-600"><i data-lucide="arrow-left"></i></button>
+                                <button onClick={() => setModal(null)} className="absolute top-6 right-6 text-slate-300"><i data-lucide="x"></i></button>
+                                
+                                <div className="text-center mb-8 mt-4">
+                                    <h2 className="text-xl font-black uppercase italic text-blue-600">Оформление</h2>
+                                    <div className="flex justify-center gap-2 mt-4">
+                                        <div className={`h-1 w-8 rounded-full ${checkoutStep >= 1 ? 'bg-blue-600' : 'bg-slate-200'}`}></div>
+                                        <div className={`h-1 w-8 rounded-full ${checkoutStep >= 2 ? 'bg-blue-600' : 'bg-slate-200'}`}></div>
+                                        <div className={`h-1 w-8 rounded-full ${checkoutStep >= 3 ? 'bg-blue-600' : 'bg-slate-200'}`}></div>
+                                    </div>
+                                </div>
+
+                                {checkoutStep === 1 && (
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold uppercase text-sm">1. Контакты</h3>
+                                        <input className="input-style" placeholder="Ваше имя" value={orderData.name} onChange={e => setOrderData({...orderData, name: e.target.value})} />
+                                        <input className="input-style" placeholder="Номер телефона" type="tel" value={orderData.phone} onChange={e => setOrderData({...orderData, phone: e.target.value})} />
+                                        <button onClick={() => { if(!orderData.name || !orderData.phone) return alert("Заполните поля!"); setCheckoutStep(2); }} className="w-full btn-primary py-4 rounded-xl font-bold uppercase mt-4">Далее</button>
+                                    </div>
+                                )}
+
+                                {checkoutStep === 2 && (
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold uppercase text-sm">2. Адрес доставки</h3>
+                                        <input className="input-style" placeholder="Улица, дом, квартира" value={orderData.address} onChange={e => setOrderData({...orderData, address: e.target.value})} />
+                                        <textarea className="input-style h-24 resize-none" placeholder="Комментарий к заказу (код домофона и т.д.)" value={orderData.comment} onChange={e => setOrderData({...orderData, comment: e.target.value})}></textarea>
+                                        <button onClick={() => { if(!orderData.address) return alert("Введите адрес!"); setCheckoutStep(3); }} className="w-full btn-primary py-4 rounded-xl font-bold uppercase mt-4">Далее</button>
+                                    </div>
+                                )}
+
+                                {checkoutStep === 3 && (
+                                    <div className="space-y-4">
+                                        <h3 className="font-bold uppercase text-sm">3. Оплата</h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button onClick={() => setOrderData({...orderData, payment: 'cash'})} className={`p-4 border rounded-xl font-bold text-xs uppercase flex flex-col items-center gap-2 ${orderData.payment === 'cash' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-200'}`}>
+                                                <i data-lucide="banknote" size={24}></i> Наличными
+                                            </button>
+                                            <button onClick={() => setOrderData({...orderData, payment: 'card'})} className={`p-4 border rounded-xl font-bold text-xs uppercase flex flex-col items-center gap-2 ${orderData.payment === 'card' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-200'}`}>
+                                                <i data-lucide="credit-card" size={24}></i> Картой
+                                            </button>
+                                        </div>
+                                        <div className="bg-slate-50 p-4 rounded-xl mt-4">
+                                            <div className="flex justify-between text-sm mb-2"><span>Товары:</span> <b>{cart.reduce((a,b)=>a+b.qty,0)} шт.</b></div>
+                                            <div className="flex justify-between text-sm mb-2"><span>Доставка:</span> <b>Бесплатно</b></div>
+                                            <div className="flex justify-between text-lg font-black text-blue-600 pt-2 border-t"><span>Итого:</span> <span>{cartTotal} с</span></div>
+                                        </div>
+                                        <button onClick={() => {
+                                            alert(`Заказ оформлен!\nИмя: ${orderData.name}\nАдрес: ${orderData.address}\nОплата: ${orderData.payment}\nСумма: ${cartTotal} с`);
+                                            setCart([]);
+                                            setModal(null);
+                                            setOrderData({ name: '', phone: '', address: '', comment: '', payment: 'cash' });
+                                        }} className="w-full btn-primary py-4 rounded-xl font-black uppercase shadow-xl bg-green-500 hover:bg-green-600">Подтвердить заказ</button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
                 </div>
             );
         };
@@ -377,4 +921,3 @@
     </script>
 </body>
 </html>
-
